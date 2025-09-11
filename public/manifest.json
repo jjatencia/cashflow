@@ -1,0 +1,32 @@
+{
+  "name": "Gestión de Caja - Barberías",
+  "short_name": "Caja Barbería",
+  "description": "Sistema de gestión de flujo de caja para barberías - Optimizado para iPad",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02145C",
+  "theme_color": "#555BF6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "lang": "es",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
