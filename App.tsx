@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { LoginForm } from './components/LoginForm';
 import { SignUpForm } from './components/SignUpForm';
 import { CashFlowDashboard } from './components/CashFlowDashboard';
+import { SessionTimeoutWarning } from './components/SessionTimeoutWarning';
 import { authService } from './services/authService';
+import { useSessionTimeout } from './hooks/useSessionTimeout';
 
 interface User {
   id: string;
@@ -19,6 +21,7 @@ export default function App() {
   const [authState, setAuthState] = useState<AuthState>({ user: null, accessToken: null });
   const [loading, setLoading] = useState(true);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
   useEffect(() => {
     // Check for existing session
@@ -58,10 +61,21 @@ export default function App() {
     try {
       await authService.signOut();
       setAuthState({ user: null, accessToken: null });
+      setShowTimeoutWarning(false);
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+
+  // Configurar auto-logout solo cuando hay usuario autenticado
+  const sessionTimeoutActive = !!authState.user && !loading;
+  
+  useSessionTimeout({
+    onTimeout: sessionTimeoutActive ? handleLogout : () => {},
+    timeoutDuration: 3 * 60 * 1000, // 3 minutos de inactividad
+    warningDuration: 30 * 1000, // 30 segundos de warning
+    onWarning: sessionTimeoutActive ? () => setShowTimeoutWarning(true) : () => {}
+  });
 
   const handleSignUpSuccess = () => {
     setShowSignUp(false);
@@ -99,9 +113,17 @@ export default function App() {
   }
 
   return (
-    <CashFlowDashboard 
-      user={authState.user.name} 
-      onLogout={handleLogout} 
-    />
+    <>
+      <CashFlowDashboard 
+        user={authState.user.name} 
+        onLogout={handleLogout} 
+      />
+      <SessionTimeoutWarning 
+        isOpen={showTimeoutWarning}
+        onExtendSession={() => setShowTimeoutWarning(false)}
+        onLogout={handleLogout}
+        countdown={30} // 30 segundos para decidir
+      />
+    </>
   );
 }
