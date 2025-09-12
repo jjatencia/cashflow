@@ -85,12 +85,26 @@ export const authService = {
   // Sign out user
   async signOut(): Promise<void> {
     try {
+      // Check if there's an active session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // No active session, consider logout successful
+        console.log('No active session found, logout completed');
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
-      if (error) {
+      if (error && !error.message.includes('session missing')) {
         throw new Error(error.message);
       }
     } catch (error) {
       console.error('Error in signOut:', error);
+      // Don't throw the error if it's just about missing session
+      if (error instanceof Error && error.message.includes('session missing')) {
+        console.log('Session already cleared, logout completed');
+        return;
+      }
       throw error;
     }
   },
