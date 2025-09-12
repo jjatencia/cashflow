@@ -47,7 +47,7 @@
 
         .container {
             width: 100%;
-            max-width: 28rem;
+            max-width: 32rem;
             margin: 0 auto;
         }
 
@@ -59,12 +59,18 @@
             padding: 2rem;
             text-align: center;
         }
+        
+        @media (min-width: 768px) {
+            .card {
+                padding: 2.5rem;
+            }
+        }
 
         .success-icon-container {
             position: relative;
-            width: 6rem;
-            height: 6rem;
-            margin: 0 auto 1.5rem;
+            width: 7rem;
+            height: 7rem;
+            margin: 0 auto 2rem;
         }
 
         .success-icon-bg {
@@ -75,33 +81,67 @@
             animation: pulse 2s infinite;
         }
 
+        .success-icon-bg-inner {
+            position: absolute;
+            inset: 0.5rem;
+            background: rgba(85, 91, 246, 0.2);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            animation-delay: 0.5s;
+        }
+
         .success-icon {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 6rem;
-            height: 6rem;
-            background: rgba(85, 91, 246, 0.2);
+            width: 7rem;
+            height: 7rem;
+            background: rgba(85, 91, 246, 0.3);
             border-radius: 50%;
         }
 
         .check-icon {
-            width: 3rem;
-            height: 3rem;
+            width: 4rem;
+            height: 4rem;
             color: var(--primary);
             animation: bounce 1s infinite;
         }
 
         .title-section {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .title-subtitle {
+            font-size: 1.125rem;
+            line-height: 1.6;
+        }
+        
+        .email-confirmation-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            color: var(--primary);
+            margin: 1.5rem 0;
+        }
+        
+        .flow-line {
+            width: 2rem;
+            border-top: 2px solid rgba(85, 91, 246, 0.3);
         }
 
         .brand-title {
-            font-size: 1.5rem;
+            font-size: 1.875rem;
             font-weight: 700;
             color: var(--foreground);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        @media (min-width: 768px) {
+            .brand-title {
+                font-size: 2.25rem;
+            }
         }
 
         .body-text {
@@ -111,8 +151,8 @@
 
         .description-card {
             background: rgba(241, 245, 249, 0.5);
-            border-radius: 0.5rem;
-            padding: 1rem;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             margin: 1.5rem 0;
         }
 
@@ -137,35 +177,52 @@
 
         .features-section {
             margin: 1.5rem 0;
-            text-align: left;
+            text-left;
         }
 
         .section-title {
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--foreground);
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
 
-        .features-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         .feature-item {
             display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.875rem;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .feature-item:hover {
+            background: rgba(241, 245, 249, 0.3);
         }
 
         .feature-dot {
-            width: 0.5rem;
-            height: 0.5rem;
+            width: 0.75rem;
+            height: 0.75rem;
             border-radius: 50%;
             flex-shrink: 0;
+            margin-top: 0.375rem;
+        }
+
+        .feature-text {
+            font-size: 0.875rem;
         }
 
         .feature-dot-primary {
@@ -277,9 +334,10 @@
     <div class="main-content">
         <div class="container">
             <div class="card">
-                <!-- Icono de éxito con animación -->
+                <!-- Icono de éxito con animación mejorada -->
                 <div class="success-icon-container">
                     <div class="success-icon-bg"></div>
+                    <div class="success-icon-bg-inner"></div>
                     <div class="success-icon">
                         <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -287,48 +345,59 @@
                     </div>
                 </div>
 
-                <!-- Título principal -->
+                <!-- Título principal con jerarquía mejorada -->
                 <div class="title-section">
-                    <h1 class="brand-title">¡Cuenta Activada!</h1>
-                    <p class="body-text">Tu cuenta ha sido confirmada exitosamente</p>
+                    <h1 class="brand-title">¡Cuenta Confirmada!</h1>
+                    <p class="body-text title-subtitle">Tu cuenta ha sido activada exitosamente</p>
                 </div>
 
-                <!-- Mensaje descriptivo -->
+                <!-- Icono de email confirmado -->
+                <div class="email-confirmation-flow">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <div class="flow-line"></div>
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+
+                <!-- Mensaje descriptivo con mejor espaciado para iPad -->
                 <div class="description-card">
                     <div class="icons-row">
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                         </svg>
                     </div>
-                    <p class="body-text" style="font-size: 0.875rem; line-height: 1.6;">
-                        Ahora puedes acceder a tu sistema de gestión financiera para las barberías de 
+                    <p class="body-text" style="font-size: 1rem; line-height: 1.6;">
+                        Ya puedes acceder a tu sistema de gestión financiera para las barberías de 
                         <span class="location-highlight">Parets del Vallès</span> y 
                         <span class="location-highlight">Lliçà d'Amunt</span>.
                     </p>
                 </div>
 
-                <!-- Características disponibles -->
+                <!-- Características disponibles con mejor organización para iPad -->
                 <div class="features-section">
-                    <h3 class="section-title">Ya puedes gestionar:</h3>
-                    <div class="features-list">
+                    <h3 class="section-title">Gestiona tu negocio:</h3>
+                    <div class="features-grid">
                         <div class="feature-item">
                             <div class="feature-dot feature-dot-primary"></div>
-                            <span class="body-text">Apertura y cierre diario de caja</span>
+                            <span class="body-text feature-text">Apertura y cierre diario de caja</span>
                         </div>
                         <div class="feature-item">
                             <div class="feature-dot feature-dot-accent"></div>
-                            <span class="body-text">Registro de movimientos de efectivo</span>
+                            <span class="body-text feature-text">Registro de movimientos de efectivo</span>
                         </div>
                         <div class="feature-item">
                             <div class="feature-dot feature-dot-primary"></div>
-                            <span class="body-text">Comparación con datos del datáfono</span>
+                            <span class="body-text feature-text">Comparación con datos del datáfono</span>
                         </div>
                         <div class="feature-item">
                             <div class="feature-dot feature-dot-accent"></div>
-                            <span class="body-text">Historial completo de operaciones</span>
+                            <span class="body-text feature-text">Historial completo de operaciones</span>
                         </div>
                     </div>
                 </div>
