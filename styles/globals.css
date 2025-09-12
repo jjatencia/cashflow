@@ -1,11 +1,11 @@
-/* Importar tipografías de Google Fonts */
+/* Importar tipografÃ­as de Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@200;300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=General+Sans:wght@200;300;400;500;600;700;800&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Tipografías corporativas */
+  /* TipografÃ­as corporativas */
   --font-primary: 'Bricolage Grotesque', sans-serif;
   --font-secondary: 'General Sans', sans-serif;
   --font-size: 16px;
@@ -67,6 +67,7 @@
   --destructive-foreground: #ffffff;
   --border: rgba(99, 102, 241, 0.3);
   --input: rgba(30, 41, 59, 0.5);
+  --input-background: #1e293b;
   --ring: #6366f1;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -143,21 +144,21 @@
 @layer base {
   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
     h1 {
-      font-family: var(--font-primary); /* Bricolage Grotesque para títulos principales */
+      font-family: var(--font-primary); /* Bricolage Grotesque para tÃ­tulos principales */
       font-size: var(--text-2xl);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
 
     h2 {
-      font-family: var(--font-primary); /* Bricolage Grotesque para títulos */
+      font-family: var(--font-primary); /* Bricolage Grotesque para tÃ­tulos */
       font-size: var(--text-xl);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
     }
 
     h3 {
-      font-family: var(--font-primary); /* Bricolage Grotesque para subtítulos */
+      font-family: var(--font-primary); /* Bricolage Grotesque para subtÃ­tulos */
       font-size: var(--text-lg);
       font-weight: var(--font-weight-medium);
       line-height: 1.5;
@@ -171,7 +172,7 @@
     }
 
     p {
-      font-family: var(--font-secondary); /* General Sans para texto de párrafo */
+      font-family: var(--font-secondary); /* General Sans para texto de pÃ¡rrafo */
       font-size: var(--text-base);
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
@@ -204,7 +205,7 @@ html {
   font-size: var(--font-size);
 }
 
-/* Clases utilitarias para tipografías */
+/* Clases utilitarias para tipografÃ­as */
 @layer utilities {
   .font-primary {
     font-family: var(--font-primary) !important;
@@ -214,7 +215,7 @@ html {
     font-family: var(--font-secondary) !important;
   }
   
-  /* Clases específicas para elementos del dashboard */
+  /* Clases especÃ­ficas para elementos del dashboard */
   .brand-title {
     font-family: var(--font-primary);
     font-weight: 600;
@@ -236,9 +237,9 @@ html {
   }
 }
 
-/* Optimizaciones específicas para iPad */
+/* Optimizaciones especÃ­ficas para iPad */
 @media (min-width: 768px) and (max-width: 1024px) {
-  /* Mejor experiencia táctil en iPad */
+  /* Mejor experiencia tÃ¡ctil en iPad */
   button {
     min-height: 44px;
   }
@@ -247,13 +248,13 @@ html {
     min-height: 48px;
   }
   
-  /* Espaciado optimizado para pantalla más grande */
+  /* Espaciado optimizado para pantalla mÃ¡s grande */
   .container {
     padding-left: 24px;
     padding-right: 24px;
   }
   
-  /* Cards más espaciosas */
+  /* Cards mÃ¡s espaciosas */
   .card {
     padding: 24px;
   }
@@ -265,7 +266,7 @@ html {
   }
 }
 
-/* Orientación landscape específica para iPad */
+/* OrientaciÃ³n landscape especÃ­fica para iPad */
 @media screen and (orientation: landscape) and (min-device-width: 768px) and (max-device-width: 1024px) {
   /* Layout horizontal optimizado */
   .grid-responsive {
@@ -279,7 +280,7 @@ html {
     min-height: 44px;
   }
   
-  /* Espaciado entre elementos táctiles */
+  /* Espaciado entre elementos tÃ¡ctiles */
   button + button, a + a {
     margin-left: 8px;
   }
