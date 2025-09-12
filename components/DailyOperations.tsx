@@ -219,7 +219,7 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Apertura de Caja */}
         <Card className="shadow-lg">
-          <CardHeader className="pb-6">
+          <CardHeader className="px-6 pt-6 pb-6">
             <CardTitle className="flex items-center gap-3 text-lg section-title">
               <DollarSign className="w-6 h-6 text-primary" />
               Apertura de Caja
@@ -257,7 +257,7 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
 
         {/* Cierre de Caja */}
         <Card className="shadow-lg">
-          <CardHeader className="pb-6">
+          <CardHeader className="px-6 pt-6 pb-6">
             <CardTitle className="flex items-center gap-3 text-lg section-title">
               <Calculator className="w-6 h-6 text-primary" />
               Cierre de Caja
@@ -355,7 +355,7 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
       {/* Resumen del día optimizado para iPad */}
       {todayRecord && (
         <Card className="shadow-lg">
-          <CardHeader className="pb-6">
+          <CardHeader className="px-6 pt-6 pb-6">
             <CardTitle className="text-xl section-title">Resumen del Día</CardTitle>
           </CardHeader>
           <CardContent>
