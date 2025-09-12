@@ -3,6 +3,7 @@ import { LoginForm } from './components/LoginForm';
 import { SignUpForm } from './components/SignUpForm';
 import { CashFlowDashboard } from './components/CashFlowDashboard';
 import { ThemeProvider } from './components/ThemeProvider';
+import { ThemeToggle } from './components/ThemeToggle';
 import { authService } from './services/authService';
 
 interface User {
@@ -90,6 +91,11 @@ export default function App() {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="barberia-theme">
+      {!authState.user && !loading && (
+        <div className="fixed top-6 right-6">
+          <ThemeToggle />
+        </div>
+      )}
       {loading ? (
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
@@ -99,20 +105,20 @@ export default function App() {
         </div>
       ) : !authState.user ? (
         showSignUp ? (
-          <SignUpForm 
+          <SignUpForm
             onSignUpSuccess={handleSignUpSuccess}
             onBackToLogin={() => setShowSignUp(false)}
           />
         ) : (
-          <LoginForm 
+          <LoginForm
             onLogin={handleLogin}
             onShowSignUp={() => setShowSignUp(true)}
           />
         )
       ) : (
-        <CashFlowDashboard 
-          user={authState.user.name} 
-          onLogout={handleLogout} 
+        <CashFlowDashboard
+          user={authState.user.name}
+          onLogout={handleLogout}
         />
       )}
     </ThemeProvider>
