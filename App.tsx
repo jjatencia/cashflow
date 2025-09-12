@@ -35,6 +35,26 @@ export default function App() {
     // Check for confirmation from localStorage
     checkForConfirmationSession();
     
+    // Listen for postMessage from confirmation page
+    const handleMessage = (event) => {
+      if (event.origin !== 'https://jjatencia.github.io') return;
+      
+      if (event.data.type === 'SUPABASE_SESSION' && event.data.session) {
+        console.log('Received session from confirmation page');
+        const session = event.data.session;
+        setAuthState({
+          user: {
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.name || session.user.email
+          },
+          accessToken: session.access_token
+        });
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
     // Check for existing session
     checkSession();
 
@@ -54,6 +74,7 @@ export default function App() {
     });
 
     return () => {
+      window.removeEventListener('message', handleMessage);
       try {
         subscription.unsubscribe();
       } catch (error) {
@@ -90,7 +111,8 @@ export default function App() {
 
   const checkForConfirmationSession = () => {
     try {
-      const storedSession = localStorage.getItem('supabase_session');
+      // Revisar tanto el localStorage normal como el backup
+      const storedSession = localStorage.getItem('supabase_session') || localStorage.getItem('supabase_session_backup');
       if (storedSession) {
         const session = JSON.parse(storedSession);
         if (session.confirmed && session.timestamp && (Date.now() - session.timestamp < 300000)) { // 5 minutos
@@ -103,13 +125,15 @@ export default function App() {
             },
             accessToken: session.access_token
           });
-          // Limpiar localStorage después de usarlo
+          // Limpiar ambos localStorage después de usarlo
           localStorage.removeItem('supabase_session');
+          localStorage.removeItem('supabase_session_backup');
         }
       }
     } catch (error) {
       console.error('Error checking confirmation session:', error);
       localStorage.removeItem('supabase_session');
+      localStorage.removeItem('supabase_session_backup');
     }
   };
 

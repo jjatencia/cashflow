@@ -37,7 +37,7 @@ export const authService = {
           data: {
             name: userData.name
           },
-          emailRedirectTo: `${window.location.origin}/confirm.html`
+          emailRedirectTo: `https://jjatencia.github.io/cashflow/`
         }
       });
 
@@ -181,7 +181,7 @@ export const authService = {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/confirm.html`
+          emailRedirectTo: `https://jjatencia.github.io/cashflow/`
         }
       });
 
