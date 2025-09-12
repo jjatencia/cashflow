@@ -36,7 +36,8 @@ export const authService = {
         options: {
           data: {
             name: userData.name
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/confirm.html`
         }
       });
 
@@ -178,7 +179,10 @@ export const authService = {
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: email
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/confirm.html`
+        }
       });
 
       if (error) {
@@ -192,7 +196,7 @@ export const authService = {
 
   // Listen to auth state changes
   onAuthStateChange(callback: (session: { user: User; accessToken: string } | null) => void) {
-    return supabase.auth.onAuthStateChange((event, session) => {
+    return supabase.auth.onAuthStateChange((_event, session) => {
       if (session && session.user) {
         callback({
           user: {

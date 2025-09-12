@@ -32,6 +32,9 @@ export default function App() {
     // Check for email confirmation token in URL
     checkForEmailConfirmation();
     
+    // Check for confirmation from localStorage
+    checkForConfirmationSession();
+    
     // Check for existing session
     checkSession();
 
@@ -61,17 +64,52 @@ export default function App() {
 
   const checkForEmailConfirmation = () => {
     const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const token = urlParams.get('token') || urlParams.get('token_hash');
     const type = urlParams.get('type');
+    const confirm = urlParams.get('confirm') || hashParams.get('confirm');
     
-    console.log('Checking URL params:', { token, type, fullURL: window.location.href });
+    console.log('Checking URL params:', { token, type, confirm, fullURL: window.location.href, hash: window.location.hash });
     
+    // Manejar confirmación por token directo de Supabase
     if (token && type === 'signup') {
       console.log('Email confirmation detected, token:', token);
       setConfirmationToken(token);
       setShowEmailConfirmation(true);
       // Limpiar la URL
       window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    // Manejar confirmación por parámetro confirm=true (nuestro redirect personalizado)  
+    else if (confirm === 'true') {
+      console.log('Custom confirmation redirect detected');
+      setShowEmailConfirmation(true);
+      // Limpiar la URL (incluyendo hash)
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  };
+
+  const checkForConfirmationSession = () => {
+    try {
+      const storedSession = localStorage.getItem('supabase_session');
+      if (storedSession) {
+        const session = JSON.parse(storedSession);
+        if (session.confirmed && session.timestamp && (Date.now() - session.timestamp < 300000)) { // 5 minutos
+          console.log('Found confirmation session in localStorage');
+          setAuthState({
+            user: {
+              id: session.user.id,
+              email: session.user.email,
+              name: session.user.user_metadata?.name || session.user.email
+            },
+            accessToken: session.access_token
+          });
+          // Limpiar localStorage después de usarlo
+          localStorage.removeItem('supabase_session');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking confirmation session:', error);
+      localStorage.removeItem('supabase_session');
     }
   };
 
