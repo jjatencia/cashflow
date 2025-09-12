@@ -99,10 +99,10 @@
                         timestamp: Date.now()
                     }));
                     
-                    // Redirigir después de 2 segundos
+                    // Redirigir a la página de confirmación exitosa después de 1.5 segundos
                     setTimeout(() => {
-                        window.location.href = '/';
-                    }, 2000);
+                        window.location.href = '/account-confirmed.html';
+                    }, 1500);
                 } else {
                     showError('Error al confirmar la cuenta: ' + (data.msg || 'Error desconocido'));
                 }
