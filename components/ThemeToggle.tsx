@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Moon, Sun, Laptop } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -10,21 +11,39 @@ import { useTheme } from './ThemeProvider';
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
+  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const updateSystemTheme = () =>
+      setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+    updateSystemTheme();
+    mediaQuery.addEventListener('change', updateSystemTheme);
+    return () => mediaQuery.removeEventListener('change', updateSystemTheme);
+  }, []);
+
+  const Icon =
+    theme === 'system'
+      ? systemTheme === 'dark'
+        ? Moon
+        : Sun
+      : theme === 'dark'
+      ? Moon
+      : Sun;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
           className="min-h-[44px] min-w-[44px] border-border/50 hover:border-primary/30 transition-all duration-200"
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Icon className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Cambiar tema</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
+      <DropdownMenuContent
         align="end" 
         className="min-w-[160px] bg-card border-border/50 shadow-lg"
       >
