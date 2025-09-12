@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as NavigationMenuPrimitive from "";
+import * as NavigationMenuPrimitive from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { ChevronDownIcon } from "lucide-react";
 

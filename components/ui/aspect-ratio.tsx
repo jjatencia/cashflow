@@ -1,6 +1,6 @@
 "use client";
 
-import * as AspectRatioPrimitive from "";
+import * as AspectRatioPrimitive from "@radix-ui/react-slot";
 
 function AspectRatio({
   ...props

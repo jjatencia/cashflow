@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import * as PopoverPrimitive from "";
+import * as PopoverPrimitive from "@radix-ui/react-slot";
 
 import { cn } from "./utils";
 
