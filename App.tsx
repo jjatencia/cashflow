@@ -64,7 +64,10 @@ export default function App() {
     const token = urlParams.get('token') || urlParams.get('token_hash');
     const type = urlParams.get('type');
     
+    console.log('Checking URL params:', { token, type, fullURL: window.location.href });
+    
     if (token && type === 'signup') {
+      console.log('Email confirmation detected, token:', token);
       setConfirmationToken(token);
       setShowEmailConfirmation(true);
       // Limpiar la URL
