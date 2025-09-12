@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Alert, AlertDescription } from './ui/alert';
 import { User, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { authService } from '../services/authService';
+import { ThemeToggle } from './ThemeToggle';
 
 interface SignUpFormProps {
   onSignUpSuccess: () => void;
@@ -58,6 +59,9 @@ export function SignUpForm({ onSignUpSuccess, onBackToLogin }: SignUpFormProps) 
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-lg shadow-xl border-0">
         <CardHeader className="text-center pb-8 bg-primary/5 rounded-t-lg">
           <div className="flex items-center justify-center mb-6">
