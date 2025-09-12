@@ -92,7 +92,7 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="barberia-theme">
       {!authState.user && !loading && (
-        <div className="fixed top-6 right-6">
+        <div className="fixed top-4 right-4">
           <ThemeToggle />
         </div>
       )}
