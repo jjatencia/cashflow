@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { LoginForm } from './components/LoginForm';
 import { SignUpForm } from './components/SignUpForm';
+import { EmailConfirmation } from './components/EmailConfirmation';
 import { CashFlowDashboard } from './components/CashFlowDashboard';
+import { SessionTimeoutWarning } from './components/SessionTimeoutWarning';
 import { ThemeProvider } from './components/ThemeProvider';
 import { ThemeToggle } from './components/ThemeToggle';
 import { authService } from './services/authService';
+import { useSessionTimeout } from './hooks/useSessionTimeout';
 
 interface User {
   id: string;
@@ -21,8 +24,14 @@ export default function App() {
   const [authState, setAuthState] = useState<AuthState>({ user: null, accessToken: null });
   const [loading, setLoading] = useState(true);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [confirmationToken, setConfirmationToken] = useState<string | undefined>();
 
   useEffect(() => {
+    // Check for email confirmation token in URL
+    checkForEmailConfirmation();
+    
     // Check for existing session
     checkSession();
 
@@ -49,6 +58,19 @@ export default function App() {
       }
     };
   }, []);
+
+  const checkForEmailConfirmation = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token') || urlParams.get('token_hash');
+    const type = urlParams.get('type');
+    
+    if (token && type === 'signup') {
+      setConfirmationToken(token);
+      setShowEmailConfirmation(true);
+      // Limpiar la URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  };
 
   const checkSession = async () => {
     try {
@@ -85,10 +107,24 @@ export default function App() {
 
   const handleSignUpSuccess = () => {
     setShowSignUp(false);
-    // Show success message or redirect to login
-    alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
+    // Ya no mostramos alert, el usuario verá la pantalla de verificación
   };
 
+  const handleEmailConfirmationSuccess = (user: User, accessToken: string) => {
+    setAuthState({ user, accessToken });
+    setShowEmailConfirmation(false);
+    setShowTimeoutWarning(false);
+  };
+
+  // Configurar auto-logout solo cuando hay usuario autenticado
+  const sessionTimeoutActive = !!authState.user && !loading;
+  
+  useSessionTimeout({
+    onTimeout: sessionTimeoutActive ? handleLogout : () => {},
+    timeoutDuration: 3 * 60 * 1000, // 3 minutos de inactividad
+    warningDuration: 30 * 1000, // 30 segundos de warning
+    onWarning: sessionTimeoutActive ? () => setShowTimeoutWarning(true) : () => {}
+  });
   return (
     <ThemeProvider defaultTheme="system" storageKey="barberia-theme">
       {!authState.user && !loading && (
@@ -104,7 +140,16 @@ export default function App() {
           </div>
         </div>
       ) : !authState.user ? (
-        showSignUp ? (
+        showEmailConfirmation ? (
+          <EmailConfirmation 
+            token={confirmationToken}
+            onConfirmationSuccess={handleEmailConfirmationSuccess}
+            onBackToLogin={() => {
+              setShowEmailConfirmation(false);
+              setShowSignUp(false);
+            }}
+          />
+        ) : showSignUp ? (
           <SignUpForm
             onSignUpSuccess={handleSignUpSuccess}
             onBackToLogin={() => setShowSignUp(false)}
@@ -116,10 +161,18 @@ export default function App() {
           />
         )
       ) : (
-        <CashFlowDashboard
-          user={authState.user.name}
-          onLogout={handleLogout}
-        />
+        <>
+          <CashFlowDashboard
+            user={authState.user.name}
+            onLogout={handleLogout}
+          />
+          <SessionTimeoutWarning 
+            isOpen={showTimeoutWarning}
+            onExtendSession={() => setShowTimeoutWarning(false)}
+            onLogout={handleLogout}
+            countdown={30}
+          />
+        </>
       )}
     </ThemeProvider>
   );

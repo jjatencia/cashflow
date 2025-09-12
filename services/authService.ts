@@ -27,25 +27,36 @@ interface SignInData {
 }
 
 export const authService = {
-  // Sign up new user
-  async signUp(userData: SignUpData): Promise<User> {
+  // Sign up new user - ahora con verificación por email
+  async signUp(userData: SignUpData): Promise<{ needsConfirmation: boolean; message: string }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${publicAnonKey}`
-        },
-        body: JSON.stringify(userData)
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            name: userData.name
+          }
+        }
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al crear la cuenta');
+
+      if (error) {
+        throw new Error(error.message);
       }
-      
-      return data.user;
+
+      // Si el usuario necesita confirmación por email
+      if (data.user && !data.user.email_confirmed_at) {
+        return {
+          needsConfirmation: true,
+          message: 'Te hemos enviado un email de verificación. Revisa tu bandeja de entrada y sigue las instrucciones para activar tu cuenta.'
+        };
+      }
+
+      // Si por alguna razón el email ya está confirmado
+      return {
+        needsConfirmation: false,
+        message: 'Cuenta creada exitosamente.'
+      };
     } catch (error) {
       console.error('Error in signUp:', error);
       throw error;
@@ -129,6 +140,53 @@ export const authService = {
     } catch (error) {
       console.error('Error getting current session:', error);
       return null;
+    }
+  },
+
+  // Confirmar email con token
+  async confirmEmail(token: string): Promise<{ user: User; accessToken: string }> {
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'signup'
+      });
+
+      if (error) {
+        throw new Error('Error al verificar el email: ' + error.message);
+      }
+
+      if (!data.session || !data.user) {
+        throw new Error('Error al confirmar la cuenta');
+      }
+
+      return {
+        user: {
+          id: data.user.id,
+          email: data.user.email!,
+          name: data.user.user_metadata.name || data.user.email!
+        },
+        accessToken: data.session.access_token
+      };
+    } catch (error) {
+      console.error('Error in confirmEmail:', error);
+      throw error;
+    }
+  },
+
+  // Reenviar email de confirmación
+  async resendConfirmation(email: string): Promise<void> {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error('Error in resendConfirmation:', error);
+      throw error;
     }
   },
 

@@ -19,6 +19,8 @@ export function SignUpForm({ onSignUpSuccess, onBackToLogin }: SignUpFormProps) 
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,19 +44,109 @@ export function SignUpForm({ onSignUpSuccess, onBackToLogin }: SignUpFormProps) 
     setError('');
 
     try {
-      await authService.signUp({
+      const result = await authService.signUp({
         email: email.trim(),
         password,
         name: name.trim()
       });
       
-      onSignUpSuccess();
+      if (result.needsConfirmation) {
+        setEmailSent(true);
+        setSuccess(result.message);
+        setError('');
+      } else {
+        // Si no necesita confirmación, redirigir directamente
+        onSignUpSuccess();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear la cuenta');
+      setSuccess('');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResendEmail = async () => {
+    if (!email.trim()) return;
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      await authService.resendConfirmation(email.trim());
+      setSuccess('Email de verificación reenviado. Revisa tu bandeja de entrada.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al reenviar el email');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Si el email ya fue enviado, mostrar pantalla de confirmación
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="w-full max-w-lg shadow-xl border-0">
+          <CardHeader className="text-center pb-8 bg-green-50 rounded-t-lg">
+            <div className="flex items-center justify-center mb-6">
+              <div className="bg-green-500 p-4 rounded-full">
+                <Mail className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-3xl mb-2 brand-title text-green-700">¡Revisa tu email!</CardTitle>
+            <p className="text-muted-foreground text-lg body-text">
+              Te hemos enviado un enlace de verificación
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {success && (
+              <Alert className="p-4 bg-green-50 border-green-200">
+                <AlertDescription className="text-base text-green-700">{success}</AlertDescription>
+              </Alert>
+            )}
+            
+            {error && (
+              <Alert variant="destructive" className="p-4">
+                <AlertDescription className="text-base">{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                Hemos enviado un enlace de verificación a:<br />
+                <strong>{email}</strong>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Si no ves el email, revisa tu carpeta de spam o correo no deseado.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <Button 
+                onClick={handleResendEmail}
+                variant="outline"
+                className="w-full h-14 text-lg"
+                disabled={loading}
+              >
+                {loading ? 'Reenviando...' : 'Reenviar email'}
+              </Button>
+
+              <Button 
+                type="button" 
+                variant="ghost"
+                className="w-full h-14 text-lg"
+                onClick={onBackToLogin}
+                disabled={loading}
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Volver al login
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
