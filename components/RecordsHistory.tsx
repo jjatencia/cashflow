@@ -114,10 +114,26 @@ function RecordRow({
       <TableCell>{record.user}</TableCell>
       <TableCell>{record.cashSales.toFixed(2)}€</TableCell>
       <TableCell>{record.cardSales.toFixed(2)}€</TableCell>
-      <TableCell className={cashDiff === 0 ? 'text-green-600' : 'text-red-600'}>
+      <TableCell
+        className={
+          cashDiff > 0
+            ? 'text-green-600'
+            : cashDiff < 0
+            ? 'text-red-600'
+            : 'text-blue-600'
+        }
+      >
         {cashDiff !== null ? `${cashDiff.toFixed(2)}€` : 'Calculando...'}
       </TableCell>
-      <TableCell className={cardDiff === 0 ? 'text-green-600' : 'text-red-600'}>
+      <TableCell
+        className={
+          cardDiff > 0
+            ? 'text-green-600'
+            : cardDiff < 0
+            ? 'text-red-600'
+            : 'text-blue-600'
+        }
+      >
         {cardDiff.toFixed(2)}€
       </TableCell>
       <TableCell>
