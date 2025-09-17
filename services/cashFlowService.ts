@@ -171,7 +171,7 @@ export const cashFlowService = {
         throw new Error(`Sucursal no encontrada: ${location}`);
       }
 
-      const response = await fetch(`https://exora-api.siantechsolutions.com/api/ventas/dia/total-ventas?fecha=${fecha}&sucursal=${sucursalId}`, {
+      const response = await fetch(`https://api.exora.app/api/ventas/dia/total-ventas?fecha=${fecha}&sucursal=${sucursalId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
