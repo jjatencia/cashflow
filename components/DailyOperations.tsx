@@ -214,12 +214,25 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
 
     try {
       setLoading(true);
+      console.log(`🔄 Cargando datos de facturación para ${location} - ${today}`);
+
       const ventasData = await cashFlowService.getVentasDelDia(location, today);
+
+      console.log(`✅ Datos recibidos:`, ventasData);
       setCashSales(ventasData.efectivo.toString());
       setCardSales(ventasData.tarjeta.toString());
+
+      // Mostrar mensaje de éxito solo si hay datos
+      if (ventasData.efectivo > 0 || ventasData.tarjeta > 0) {
+        console.log(`✅ Facturación cargada: €${ventasData.efectivo} efectivo, €${ventasData.tarjeta} tarjeta`);
+      } else {
+        console.log(`⚠️ No hay facturación para esta fecha o hubo un error en la API`);
+      }
+
     } catch (error) {
-      console.error('Error loading sales data:', error);
-      alert('Error al cargar los datos de facturación. Por favor, intenta de nuevo.');
+      console.error('❌ Error loading sales data:', error);
+      // NO mostrar alert que podría causar problemas con la sesión
+      console.log('🔄 Manteniendo valores actuales debido al error');
     } finally {
       setLoading(false);
     }
