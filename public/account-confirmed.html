@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta Confirmada - Gestión de Caja</title>
+    <style>
+        :root {
+            --primary: #555BF6;
+            --accent: #8B9CC7;
+            --background: #FAFBFC;
+            --card: white;
+            --foreground: #1E293B;
+            --muted-foreground: #64748B;
+            --border: #E2E8F0;
+            --muted: #F1F5F9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            width: 100%;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        @media (min-width: 768px) {
+            .card {
+                padding: 2.5rem;
+            }
+        }
+
+        .success-icon-container {
+            position: relative;
+            width: 7rem;
+            height: 7rem;
+            margin: 0 auto 2rem;
+        }
+
+        .success-icon-bg {
+            position: absolute;
+            inset: 0;
+            background: rgba(85, 91, 246, 0.1);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .success-icon-bg-inner {
+            position: absolute;
+            inset: 0.5rem;
+            background: rgba(85, 91, 246, 0.2);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            animation-delay: 0.5s;
+        }
+
+        .success-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 7rem;
+            height: 7rem;
+            background: rgba(85, 91, 246, 0.3);
+            border-radius: 50%;
+        }
+
+        .check-icon {
+            width: 4rem;
+            height: 4rem;
+            color: var(--primary);
+            animation: bounce 1s infinite;
+        }
+
+        .title-section {
+            margin-bottom: 2rem;
+        }
+
+        .title-subtitle {
+            font-size: 1.125rem;
+            line-height: 1.6;
+        }
+        
+        .email-confirmation-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            color: var(--primary);
+            margin: 1.5rem 0;
+        }
+        
+        .flow-line {
+            width: 2rem;
+            border-top: 2px solid rgba(85, 91, 246, 0.3);
+        }
+
+        .brand-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.75rem;
+        }
+        
+        @media (min-width: 768px) {
+            .brand-title {
+                font-size: 2.25rem;
+            }
+        }
+
+        .body-text {
+            color: var(--muted-foreground);
+            line-height: 1.5;
+        }
+
+        .description-card {
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .icons-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .location-highlight {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .features-section {
+            margin: 1.5rem 0;
+            text-left;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--foreground);
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        
+        .feature-item:hover {
+            background: rgba(241, 245, 249, 0.3);
+        }
+
+        .feature-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 0.375rem;
+        }
+
+        .feature-text {
+            font-size: 0.875rem;
+        }
+
+        .feature-dot-primary {
+            background: var(--primary);
+        }
+
+        .feature-dot-accent {
+            background: var(--accent);
+        }
+
+        .primary-button {
+            width: 100%;
+            height: 3rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            margin: 1.5rem 0;
+        }
+
+        .primary-button:hover {
+            background: rgba(85, 91, 246, 0.9);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .arrow-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .footer-info {
+            padding-top: 1rem;
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .branding-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .dots-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dot-small {
+            width: 0.25rem;
+            height: 0.25rem;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .dot-medium {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .brand-footer {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            .brand-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- Theme toggle placeholder -->
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="card">
+                <!-- Icono de éxito con animación mejorada -->
+                <div class="success-icon-container">
+                    <div class="success-icon-bg"></div>
+                    <div class="success-icon-bg-inner"></div>
+                    <div class="success-icon">
+                        <svg class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Título principal con jerarquía mejorada -->
+                <div class="title-section">
+                    <h1 class="brand-title">¡Cuenta Confirmada!</h1>
+                    <p class="body-text title-subtitle">Tu cuenta ha sido activada exitosamente</p>
+                </div>
+
+                <!-- Icono de email confirmado -->
+                <div class="email-confirmation-flow">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <div class="flow-line"></div>
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+
+                <!-- Mensaje descriptivo con mejor espaciado para iPad -->
+                <div class="description-card">
+                    <div class="icons-row">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 1.5rem; height: 1.5rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                    </div>
+                    <p class="body-text" style="font-size: 1rem; line-height: 1.6;">
+                        Ya puedes acceder a tu sistema de gestión financiera para las barberías de 
+                        <span class="location-highlight">Parets del Vallès</span> y 
+                        <span class="location-highlight">Lliçà d'Amunt</span>.
+                    </p>
+                </div>
+
+                <!-- Características disponibles con mejor organización para iPad -->
+                <div class="features-section">
+                    <h3 class="section-title">Gestiona tu negocio:</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-dot feature-dot-primary"></div>
+                            <span class="body-text feature-text">Apertura y cierre diario de caja</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-dot feature-dot-accent"></div>
+                            <span class="body-text feature-text">Registro de movimientos de efectivo</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-dot feature-dot-primary"></div>
+                            <span class="body-text feature-text">Comparación con datos del datáfono</span>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-dot feature-dot-accent"></div>
+                            <span class="body-text feature-text">Historial completo de operaciones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de acción principal -->
+                <a href="/" class="primary-button">
+                    <span>Iniciar Sesión</span>
+                    <svg class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </a>
+
+                <!-- Información adicional -->
+                <div class="footer-info">
+                    <p>¿Tienes algún problema? Contacta con el soporte técnico.</p>
+                </div>
+            </div>
+
+            <!-- Footer con branding sutil -->
+            <div class="branding-footer">
+                <div class="dots-container">
+                    <div class="dot-small"></div>
+                    <div class="dot-medium"></div>
+                    <div class="dot-small"></div>
+                </div>
+                <p class="brand-footer">Gestión de Caja LBJ • Optimizado para iPad</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-limpiar la sesión temporal si existe
+        if (localStorage.getItem('supabase_session')) {
+            const session = JSON.parse(localStorage.getItem('supabase_session'));
+            if (session.confirmed) {
+                // La sesión ya fue confirmada, podemos limpiar el flag temporal
+                delete session.confirmed;
+                delete session.timestamp;
+                localStorage.setItem('supabase_session', JSON.stringify(session));
+            }
+        }
+    </script>
+</body>
+</html>

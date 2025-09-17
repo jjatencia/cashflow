@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar cuenta - Gestión de Caja</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #555BF6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .button {
+            background: #555BF6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Confirmando tu cuenta...</h2>
+        <div class="spinner"></div>
+        <p id="message">Procesando confirmación...</p>
+        <div id="actions" style="display: none;">
+            <a href="/" class="button">Ir a la aplicación</a>
+        </div>
+    </div>
+
+    <script type="module">
+        async function confirmAccount() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token') || urlParams.get('token_hash');
+            const type = urlParams.get('type');
+            
+            if (!token || type !== 'signup') {
+                showError('Enlace de confirmación inválido');
+                return;
+            }
+            
+            try {
+                // Hacer la confirmación directamente con Supabase
+                const response = await fetch(`https://mefjgaqbxamxyfwuxbvl.supabase.co/auth/v1/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lZmpnYXFieGFteHlmd3V4YnZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2MjEwNDUsImV4cCI6MjA3MzE5NzA0NX0.U986yWCX8h-8eVGq5GBuw-HgdNZLt1ubp4zStCvCTIo'
+                    },
+                    body: JSON.stringify({
+                        type: 'signup',
+                        token: token
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.access_token) {
+                    showSuccess();
+                    // Guardar la sesión en localStorage para que la app principal la detecte
+                    localStorage.setItem('supabase_session', JSON.stringify({
+                        access_token: data.access_token,
+                        refresh_token: data.refresh_token,
+                        user: data.user,
+                        confirmed: true,
+                        timestamp: Date.now()
+                    }));
+                    
+                    // Redirigir a la página de confirmación exitosa después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/account-confirmed.html';
+                    }, 1500);
+                } else {
+                    showError('Error al confirmar la cuenta: ' + (data.msg || 'Error desconocido'));
+                }
+            } catch (error) {
+                showError('Error de conexión: ' + error.message);
+            }
+        }
+        
+        function showSuccess() {
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('message').innerHTML = '<span class="success">✅ ¡Cuenta confirmada exitosamente!</span><br>Redirigiendo...';
+        }
+        
+        function showError(message) {
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('message').innerHTML = `<span class="error">❌ ${message}</span>`;
+            document.getElementById('actions').style.display = 'block';
+        }
+        
+        // Iniciar confirmación
+        confirmAccount();
+    </script>
+</body>
+</html>
