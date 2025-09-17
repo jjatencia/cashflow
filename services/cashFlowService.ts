@@ -26,6 +26,11 @@ interface Movement {
   timestamp: string;
 }
 
+interface VentasData {
+  efectivo: number;
+  tarjeta: number;
+}
+
 const getHeaders = async () => {
   const session = await authService.getCurrentSession();
   return {
@@ -33,6 +38,13 @@ const getHeaders = async () => {
     'Authorization': `Bearer ${session?.accessToken || publicAnonKey}`
   };
 };
+
+// Mapeo de ubicaciones a IDs de sucursal
+const SUCURSAL_IDS = {
+  "Parets del Vallès": "parets",
+  "Lliçà d'Amunt": "llica"
+};
+
 
 export const cashFlowService = {
   // Daily Records
@@ -138,15 +150,46 @@ export const cashFlowService = {
         method: 'GET',
         headers
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch records history');
       }
-      
+
       const data = await response.json();
       return data.records;
     } catch (error) {
       console.error('Error fetching records history:', error);
+      throw error;
+    }
+  },
+
+  // Ventas del día
+  async getVentasDelDia(location: string, fecha: string): Promise<VentasData> {
+    try {
+      const sucursalId = SUCURSAL_IDS[location as keyof typeof SUCURSAL_IDS];
+      if (!sucursalId) {
+        throw new Error(`Sucursal no encontrada: ${location}`);
+      }
+
+      const response = await fetch(`https://exora-api.siantechsolutions.com/api/ventas/dia/total-ventas?fecha=${fecha}&sucursal=${sucursalId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch ventas del día');
+      }
+
+      const data = await response.json();
+
+      return {
+        efectivo: data.efectivo || 0,
+        tarjeta: data.tarjeta || 0
+      };
+    } catch (error) {
+      console.error('Error fetching ventas del día:', error);
       throw error;
     }
   }

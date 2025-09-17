@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { CalendarDays, DollarSign, CreditCard, Calculator } from 'lucide-react';
+import { CalendarDays, DollarSign, CreditCard, Calculator, Download } from 'lucide-react';
 import { cashFlowService } from '../services/cashFlowService';
 
 interface DailyOperationsProps {
@@ -209,6 +209,22 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
     }
   };
 
+  const handleLoadSales = async () => {
+    if (!todayRecord || loading) return;
+
+    try {
+      setLoading(true);
+      const ventasData = await cashFlowService.getVentasDelDia(location, today);
+      setCashSales(ventasData.efectivo.toString());
+      setCardSales(ventasData.tarjeta.toString());
+    } catch (error) {
+      console.error('Error loading sales data:', error);
+      alert('Error al cargar los datos de facturación. Por favor, intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-3 mb-8">
@@ -264,6 +280,17 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="flex justify-end mb-4">
+              <Button
+                onClick={handleLoadSales}
+                disabled={!todayRecord || loading}
+                variant="outline"
+                className="h-10 px-4 button-text"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {loading ? 'Cargando...' : 'Cargar Facturación'}
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="cash-sales" className="text-base font-medium mb-3 block body-text">
