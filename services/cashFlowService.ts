@@ -41,8 +41,8 @@ const getHeaders = async () => {
 
 // Mapeo de ubicaciones a IDs de sucursal
 const SUCURSAL_IDS = {
-  "Parets del Vallès": "parets",
-  "Lliçà d'Amunt": "llica"
+  "Parets del Vallès": "6633b853750bb0f712ee0732",
+  "Lliçà d'Amunt": "6633b8bdc41994aca279ed24"
 };
 
 
@@ -168,29 +168,57 @@ export const cashFlowService = {
     try {
       const sucursalId = SUCURSAL_IDS[location as keyof typeof SUCURSAL_IDS];
       if (!sucursalId) {
+        console.error(`❌ Sucursal no encontrada: ${location}`);
         throw new Error(`Sucursal no encontrada: ${location}`);
       }
 
-      const response = await fetch(`https://api.exora.app/api/ventas/dia/total-ventas?fecha=${fecha}&sucursal=${sucursalId}`, {
+      // Usar la fecha actual de la aplicación
+      const fechaActual = fecha;
+      const url = `https://api.exora.app/api/ventas/dia/total-ventas?fecha=${fechaActual}&sucursal=${sucursalId}`;
+      console.log(`🔄 Llamando API: ${url}`);
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch ventas del día');
+      console.log(`📡 Response status: ${response.status}`);
+      console.log(`📡 Response ok: ${response.ok}`);
+
+      let data;
+      try {
+        const responseText = await response.text();
+        console.log(`📋 Raw response text:`, responseText);
+
+        if (!response.ok) {
+          console.error(`❌ API Error ${response.status}:`, responseText);
+          throw new Error(`Error ${response.status}: ${responseText}`);
+        }
+
+        // Intentar parsear como JSON
+        data = JSON.parse(responseText);
+        console.log(`✅ Parsed JSON:`, data);
+      } catch (parseError) {
+        console.error(`❌ Error parsing response:`, parseError);
+        throw new Error(`Error parsing API response: ${parseError}`);
       }
 
-      const data = await response.json();
-
       return {
-        efectivo: data.efectivo || 0,
-        tarjeta: data.tarjeta || 0
+        efectivo: data.resumen?.efectivo || 0,
+        tarjeta: data.resumen?.tarjeta || 0
       };
     } catch (error) {
-      console.error('Error fetching ventas del día:', error);
-      throw error;
+      console.error('❌ Error completo en getVentasDelDia:', error);
+
+      // NO relanzar el error para evitar que afecte la sesión
+      // En su lugar, devolver valores por defecto
+      console.log('🔄 Devolviendo valores por defecto debido al error');
+      return {
+        efectivo: 0,
+        tarjeta: 0
+      };
     }
   }
 };

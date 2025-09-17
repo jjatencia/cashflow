@@ -44,8 +44,8 @@ export const useSessionTimeout = ({
 
   const handleVisibilityChange = useCallback(() => {
     if (document.hidden) {
-      // La pantalla se apagó o cambió de pestaña - logout inmediato
-      onTimeout();
+      // La pantalla se apagó o cambió de pestaña - solo pausar timer
+      // onTimeout(); // Comentado temporalmente para evitar logout agresivo
     } else {
       // La pantalla volvió a estar visible - resetear timer
       resetTimer();
@@ -54,7 +54,7 @@ export const useSessionTimeout = ({
 
   const handlePageBlur = useCallback(() => {
     // Cuando la ventana pierde el foco (iPad va a sleep, etc.)
-    onTimeout();
+    // onTimeout(); // Comentado temporalmente para evitar logout agresivo
   }, [onTimeout]);
 
   useEffect(() => {
