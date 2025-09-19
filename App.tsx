@@ -7,7 +7,7 @@ import { SessionTimeoutWarning } from './components/SessionTimeoutWarning';
 import { ThemeProvider } from './components/ThemeProvider';
 import { ThemeToggle } from './components/ThemeToggle';
 import { authService } from './services/authService';
-import { useSessionTimeout } from './hooks/useSessionTimeout';
+// import { useSessionTimeout } from './hooks/useSessionTimeout'; // Desactivado
 
 interface User {
   id: string;
@@ -182,14 +182,15 @@ export default function App() {
   };
 
   // Configurar auto-logout solo cuando hay usuario autenticado
-  const sessionTimeoutActive = !!authState.user && !loading;
-  
-  useSessionTimeout({
-    onTimeout: sessionTimeoutActive ? handleLogout : () => {},
-    timeoutDuration: 3 * 60 * 1000, // 3 minutos de inactividad
-    warningDuration: 30 * 1000, // 30 segundos de warning
-    onWarning: sessionTimeoutActive ? () => setShowTimeoutWarning(true) : () => {}
-  });
+  // const sessionTimeoutActive = !!authState.user && !loading;
+
+  // TIMEOUT DESACTIVADO - Comentado para evitar problemas con el login
+  // useSessionTimeout({
+  //   onTimeout: sessionTimeoutActive ? handleLogout : () => {},
+  //   timeoutDuration: 3 * 60 * 1000, // 3 minutos de inactividad
+  //   warningDuration: 30 * 1000, // 30 segundos de warning
+  //   onWarning: sessionTimeoutActive ? () => setShowTimeoutWarning(true) : () => {}
+  // });
   return (
     <ThemeProvider defaultTheme="system" storageKey="barberia-theme">
       {!authState.user && !loading && (
