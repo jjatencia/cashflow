@@ -428,9 +428,14 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="font-medium">Diferencia:</span>
-                    <Badge 
-                      variant={getCashDifference() === 0 ? 'default' : 'destructive'}
-                      className="text-base py-2 px-3"
+                    <Badge
+                      className={`text-base py-2 px-3 text-white ${
+                        getCashDifference() > 0
+                          ? 'bg-green-500'
+                          : getCashDifference() < 0
+                          ? 'bg-red-500'
+                          : 'bg-blue-500'
+                      }`}
                     >
                       {getCashDifference().toFixed(2)}€
                     </Badge>
@@ -451,9 +456,14 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="font-medium">Diferencia:</span>
-                    <Badge 
-                      variant={getCardDifference() === 0 ? 'default' : 'destructive'}
-                      className="text-base py-2 px-3"
+                    <Badge
+                      className={`text-base py-2 px-3 text-white ${
+                        getCardDifference() > 0
+                          ? 'bg-green-500'
+                          : getCardDifference() < 0
+                          ? 'bg-red-500'
+                          : 'bg-blue-500'
+                      }`}
                     >
                       {getCardDifference().toFixed(2)}€
                     </Badge>
