@@ -8,7 +8,7 @@ export function UpdateNotification() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Verificar cada 5 minutos si hay una nueva versión
+    // Verificar si hay una nueva versión
     const checkForUpdates = async () => {
       try {
         // Hacer un fetch al index.html con un timestamp para evitar caché
@@ -37,14 +37,22 @@ export function UpdateNotification() {
       }
     };
 
-    // Verificar inmediatamente al cargar
+    // Verificar inmediatamente al cargar la aplicación
     checkForUpdates();
 
-    // Verificar cada 5 minutos
-    const interval = setInterval(checkForUpdates, 5 * 60 * 1000);
+    // Verificar cuando la pestaña vuelve a estar visible (después de estar oculta)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !updateAvailable) {
+        checkForUpdates();
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, []);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [updateAvailable]);
 
   const handleUpdate = () => {
     // Limpiar caché y recargar
