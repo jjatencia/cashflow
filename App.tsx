@@ -4,6 +4,7 @@ import { SignUpForm } from './components/SignUpForm';
 import { EmailConfirmation } from './components/EmailConfirmation';
 import { CashFlowDashboard } from './components/CashFlowDashboard';
 import { SessionTimeoutWarning } from './components/SessionTimeoutWarning';
+import { UpdateNotification } from './components/UpdateNotification';
 import { ThemeProvider } from './components/ThemeProvider';
 import { ThemeToggle } from './components/ThemeToggle';
 import { authService } from './services/authService';
@@ -193,6 +194,7 @@ export default function App() {
   // });
   return (
     <ThemeProvider defaultTheme="system" storageKey="barberia-theme">
+      <UpdateNotification />
       {!authState.user && !loading && (
         <div className="fixed top-4 right-4">
           <ThemeToggle />
