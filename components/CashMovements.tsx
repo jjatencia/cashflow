@@ -35,7 +35,14 @@ export function CashMovements({ location, user }: CashMovementsProps) {
   const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const today = new Date().toISOString().split('T')[0];
+  const getLocalDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const today = getLocalDate();
 
   // Función para manejar el focus en inputs numéricos
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
