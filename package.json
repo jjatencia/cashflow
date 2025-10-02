@@ -57,7 +57,9 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^4.0.0-alpha.15",
     "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.1.4",
+    "vite-plugin-pwa": "^1.0.3",
+    "workbox-window": "^7.3.0"
   },
   "keywords": [
     "barbería",

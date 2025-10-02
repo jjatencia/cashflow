@@ -1,74 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { RefreshCw, X } from 'lucide-react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export function UpdateNotification() {
-  const [updateAvailable, setUpdateAvailable] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  useEffect(() => {
-    // Verificar si hay una nueva versión
-    const checkForUpdates = async () => {
-      try {
-        // Hacer un fetch al index.html con un timestamp para evitar caché
-        const response = await fetch(`/index.html?t=${Date.now()}`, {
-          method: 'HEAD',
-          cache: 'no-cache'
-        });
+  const {
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(registration) {
+      console.log('Service Worker registrado exitosamente');
 
-        // Obtener el ETag o Last-Modified del servidor
-        const etag = response.headers.get('etag');
-        const lastModified = response.headers.get('last-modified');
-
-        // Obtener la versión guardada en localStorage
-        const storedVersion = localStorage.getItem('app-version');
-        const currentVersion = etag || lastModified || '';
-
-        if (storedVersion === null) {
-          // Primera vez que carga la app
-          localStorage.setItem('app-version', currentVersion);
-        } else if (storedVersion !== currentVersion && currentVersion !== '') {
-          // Hay una nueva versión disponible
-          setUpdateAvailable(true);
-        }
-      } catch (error) {
-        console.error('Error checking for updates:', error);
+      // Verificar actualizaciones cada hora
+      if (registration) {
+        setInterval(() => {
+          registration.update();
+        }, 60 * 60 * 1000); // 1 hora
       }
-    };
+    },
+    onRegisterError(error) {
+      console.error('Error al registrar Service Worker:', error);
+    },
+  });
 
-    // Verificar inmediatamente al cargar la aplicación
-    checkForUpdates();
-
-    // Verificar cuando la pestaña vuelve a estar visible (después de estar oculta)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && !updateAvailable) {
-        checkForUpdates();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [updateAvailable]);
-
-  const handleUpdate = () => {
-    // Limpiar caché y recargar
-    if ('caches' in window) {
-      caches.keys().then(names => {
-        names.forEach(name => caches.delete(name));
-      });
-    }
-    window.location.reload();
+  const handleUpdate = async () => {
+    await updateServiceWorker(true);
   };
 
   const handleDismiss = () => {
     setDismissed(true);
+    setNeedRefresh(false);
   };
 
-  if (!updateAvailable || dismissed) {
+  if (!needRefresh || dismissed) {
     return null;
   }
 
