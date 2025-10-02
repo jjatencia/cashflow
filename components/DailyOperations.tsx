@@ -102,11 +102,17 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
     loadMovements();
   }, [location]);
 
+  const getPreviousDay = (dateString: string): string => {
+    const date = new Date(dateString);
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split('T')[0];
+  };
+
   const loadTodayRecord = async () => {
     try {
       setLoading(true);
       const existing = await cashFlowService.getDailyRecord(location, today);
-      
+
       if (existing) {
         setTodayRecord(existing);
         setOpeningCash(existing.openingCash.toString());
@@ -114,6 +120,14 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
         setCardSales(existing.cardSales.toString());
         setDatafoneSales(existing.datafoneSales.toString());
         setFinalCashCount(existing.finalCashCount.toString());
+      } else {
+        // Si no hay registro para hoy, cargar el importe del cierre de ayer
+        const yesterday = getPreviousDay(today);
+        const yesterdayRecord = await cashFlowService.getDailyRecord(location, yesterday);
+
+        if (yesterdayRecord && yesterdayRecord.finalCashCount > 0) {
+          setOpeningCash(yesterdayRecord.finalCashCount.toString());
+        }
       }
     } catch (error) {
       console.error('Error loading today record:', error);
@@ -156,7 +170,7 @@ export function DailyOperations({ location, user }: DailyOperationsProps) {
   const getCardDifference = () => {
     const sales = parseFloat(cardSales) || 0;
     const datafone = parseFloat(datafoneSales) || 0;
-    return sales - datafone;
+    return datafone - sales;
   };
 
   const handleOpenCash = async () => {
